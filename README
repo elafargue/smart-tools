@@ -1,0 +1,17 @@
+This is a copy of my "Smart Tools" html5 utility which I used to host on my website.
+
+This tool will use the SConnect plugin from Gemalto and is able to 'explore' or parse,
+the contents of quite a few kinds of smart cards:
+
+- PKCS#15 profiles on 7816-4 smart cards
+- Calypso profiles - including decoding of the file contents for Navigo cards from RATP
+- Mifare cards : this is a complete reader/writer of Mifare cards, if your smart card reader is mifare-compatible
+
+... and many more!
+
+If you would like to go further with this tool, please let me know so that I can give you
+access to this github repository.
+
+License of all the original code here is GPLv3 unless indicated otherwise.
+
+Edouard Lafargue, Feb 2012
