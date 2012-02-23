@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>ATR Parser</title>
+
+<script type="text/javascript" src="jquery.js"></script> 
+<script type="text/javascript" src="ext-jquery-adapter.js"></script>
+<script type="text/javascript" src="ext-all.js"></script>
+<!-- CSS Ext -->
+<link rel="stylesheet" type="text/css" href="resources/css/ext-all.css">
+<link rel="stylesheet" type="text/css" href="resources/css/xtheme-gray.css" />
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+</head>
+<body onunload="Exit()" class="x-gray">
+<!--
+ * @author elafargue, edouard@lafargue.name
+ *
+ * Distributed under the GNU GENERAL PUBLIC LICENSE (GPL)
+ *            Version 2 (June 1991).
+-->
+<!--<script src="sconnect_marshaller.js"></script>
+-->
+
+<script src="https://www.sconnect.com/scripts/sconnect_marshaller.js" type="text/javascript"></script>
+<script src="card-identifier.js"></script>    
+<!-- This script creates the GUI: -->
+<div id="scriptDiv"></div>
+<script src="ReaderScanner.js"></script>
+
+
+<div id="pageHeader">
+<img src="../images/chip.png" style="float:left; margin-left: 5px; margin-right:5px; margin-top:2px;">
+    	<h1>Smart card Explorer</h1>
+</div>
+
+<div id="contentContainer">
+<!-- This container contains the tabs of the UI -->
+	        
+<div id="tabPanel"></div>
+	<div id ="atrContainer"></div>
+	<div id="xPlorer" class="x-hide-display">Card Explorer (not active yet)</div>
+
+</div> <!-- contentContainer -->
+
+<div id="pageFooter">
+      <p>&copy; 2009 - ELafargue <a href="mailto:edouard@lafargue.name">Ask a question</a>.</p>
+</div><!-- End Footer -->
+
+
+</body>
+</html>

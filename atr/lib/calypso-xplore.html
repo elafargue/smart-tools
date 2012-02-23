@@ -1,0 +1,355 @@
+<html>
+<script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/p15/define.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/p15/cardLayout.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/p15/asn1JS.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/calypso/calypsoSmartCard.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/calypso/intercode2.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/calypso/calypsoOS.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/calypso/Parse_card.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+/*
+ * Explorer for Calypso Smart Cards
+ *
+ * (c) 2008 Edouard Lafargue, edouard@lafargue.name
+ *
+ * Distributed under the GNU GENERAL PUBLIC LICENSE (GPL)
+ * Version 2 (June 1991).
+ */
+
+CalypsoXplorer=function(){
+};
+
+
+CalypsoXplorer.prototype = {
+	reader: null,
+	atr: null,
+	cardNode: null,
+	informationPanel: null,
+	fileDumpPanel: null,
+	apduTracePanel: null,
+
+	init: function(reader, atr) {
+		/* Instanciate the GUI */
+	this.reader= reader;
+	this.atr = atr;
+	this.createGui(this);
+	},
+
+	refreshCardTree: function() {
+		calypsoParseMe(this);
+	},
+
+	fillCardInfo: function(panel) {
+		// Parses the extended ATR information:
+		var chipType = {
+			"00": "???",
+			"01": "ST16V623",
+			"02": "ST16601",
+			"03": "ST16RF42",
+			"04": "M35101",
+			"05": "Type 05",
+			"06": "ST16SF4F",
+			"07": "ST16RF58",
+			"08": "ST16RF820",
+			"09": "ST16VF52",
+			"0A": "ST16RF52",
+                        "14": "ST16SF48",
+			"21": "ST19XR08",
+			"22": "ST19XR34",
+			"23": "ST19NM34",
+			"28": "ST19WR02",
+			"29": "ST19WR08",
+			"30": "AT05SC4002RF",
+			"31": "SLE66CLX320P",
+			"41": "Philips ProX",
+			"C0": "JavaCard"
+		};
+	cardHtml = "Chip type: " + this.atr.substr(12,2) + " (" + chipType[this.atr.substr(12,2)] + ")<br>";
+	var appType = {
+		"01": "CD97, Calypso revision 1",
+		"02": "Modeus v1.1, Calypso revision 1",
+		"03": "GTML, Calypso revision 1",
+		"04": "CT2000, Calypso revision 1",
+		"06": "Calypso application, Calypso revision 2",
+		"07": "Extended Calypso application, Calypso revision 2",
+		"11": "Calypso card without token purse application, Calypso revision 2",
+		"13": "Calypso card with token purse application, Calypso revision 2",
+		"80": "Calypso SAM"
+	};
+	cardHtml += "Application: " + this.atr.substr(14,2) + " (" + appType[this.atr.substr(14,2)] + ")<br>";
+
+	var softIssuer = {
+		"00": "ASK",
+		"01": "Intec",
+		"02": "Calypso",
+		"03": "Ascom",
+		"04": "Thalès",
+		"06": "Axalto",
+		"07": "Bull",
+		"08": "Spirtech",
+		"09": "BMS",
+		"0A": "Oberthur",
+		"0B": "Gemplus",
+		"0C": "Magnadata",
+		"0D": "Calmell",
+		"0E": "Mecstar",
+		"0F": "ACG Identification",
+		"10": "STMicroelectronics",
+		"11": "Calypso",
+		"12": "Giesecke & Devrient",
+		"13": "OTI",
+		"20": "Calypso",
+		"2E": "Calypso"
+	};
+	cardHtml += "SW Issuer: " + this.atr.substr(18,2) + " (" + softIssuer[this.atr.substr(18,2)] + ")<br>";
+
+	cardHtml += "Card Serial Number: " + parseInt(this.atr.substr(24,8),16);
+	panel.html = cardHtml;
+	},
+
+	createGui: function(myXplorer){
+    //  |-----------------|-------------|
+    //  | Title Bar    [R]|             |
+    //  |-----------------|             |
+    //  |                 |             |         
+    //  |                 |   Analyse   |         
+    //  |       Tree      |------------ |         
+    //  |-----------------|             |         
+    //  |   Card Info     |    Dump     |
+    //  |-----------------|-------------|
+    //  |                APDU           |         
+    //  |-------------------------------|
+    
+    // Create Specific GUI  
+	var d = new Date();
+	var xId = 'cal-' + d.getTime();
+        Ext.DomHelper.append('xPlorer',"<div id='"+xId+"'></div>");
+
+    // All columns are percentages -- they must add up to 1
+    var Tree = Ext.tree;
+    p15tree = new Tree.TreePanel({
+        title: 'Card Structure',
+        height: 200,
+        width: 300,
+        region: 'center',
+        animate: true,
+        autoScroll: true,
+        containerScroll: true,
+	myXplorer: myXplorer,
+	tools: [{
+    		id:'refresh',
+    		qtip: 'Parse/Refresh',
+    		handler: function(event, toolEl, panel){
+        	// refresh logic
+		panel.myXplorer.refreshCardTree();
+	    }
+	}],
+        bodyStyle: {
+        },
+        
+        dropConfig: {
+            appendOnly: true
+        }
+    });
+
+    this.cardNode = new Tree.TreeNode({
+        text: 'Click on the \'Refresh\' button above to start parsing.',
+        draggable: false, // disable root node dragging
+        id: 'root'
+    });
+    p15tree.setRootNode(this.cardNode);
+    p15tree.on('click', function(node){
+        var asn1 = new ASN1("Calypso");
+        var currentPath = node.details;
+        var cardInfo;
+        // In case the user clicks on the empty tree instead of the refresh button
+	if ((node.childNodes.length ==0) && (node.id=="root")) {
+		myXplorer.refreshCardTree();
+	} else {
+	        // disable current dump
+        	enableDump = false;
+                myXplorer.informationPanel.body.update("<u>File Attribute decoding: </u><br/>Raw: "+currentPath.rawFileAttribute+"<br>");
+        	myXplorer.informationPanel.body.insertHtml("beforeEnd",asn1.readTLV(currentPath.rawFileAttribute)+"<br/>");
+        	if ((currentPath.fileFamily === "EF") && (currentPath.getContent[1] != "")) {
+        	    var dump = currentPath.getContent;
+			if(currentPath.fileID == "2010") {
+			var intercode = new Intercode2();
+			myXplorer.informationPanel.body.insertHtml("beforeEnd","<hr><b>Event log decoding</b><br/>");
+			for(i=1;i<currentPath.getContent.length;i++) {
+			        myXplorer.informationPanel.body.insertHtml("beforeEnd",intercode.parseEvent(currentPath.getContent[i])+"<br/>");
+			}
+			}
+			if(currentPath.fileID == "2040") {
+			var intercode = new Intercode2();
+			myXplorer.informationPanel.body.insertHtml("beforeEnd","<hr><b>Special Event log decoding</b><br/>");
+			for(i=1;i<currentPath.getContent.length;i++) {
+			        myXplorer.informationPanel.body.insertHtml("beforeEnd",intercode.parseEvent(currentPath.getContent[i])+"<br/>");
+			}
+			}
+			if(currentPath.fileID == "2050") {
+			var intercode = new Intercode2();
+			myXplorer.informationPanel.body.insertHtml("beforeEnd","<hr><b>Contracts list decoding</b><br/>");
+			for(i=1;i<currentPath.getContent.length;i++) {
+			        myXplorer.informationPanel.body.insertHtml("beforeEnd",intercode.parseContractList(currentPath.getContent[i])+"<br/>");
+			}
+			}
+			if(currentPath.fileID == "2001") {
+			var intercode = new Intercode2();
+			myXplorer.informationPanel.body.insertHtml("beforeEnd","<hr><b>Environment & holder decoding</b><br/>");
+			for(i=1;i<currentPath.getContent.length;i++) {
+			        myXplorer.informationPanel.body.insertHtml("beforeEnd",intercode.parseEnvironmentHolderList(currentPath.getContent[i])+"<br/>");
+			}
+			}
+			if(currentPath.fileID == "2020") {
+				var contractList = "";
+				try {
+					// Go up the tree to fetch the contract list in file 2050
+					// Careful though: some Navigo cards do not have this file...
+					contractList = currentPath.parentFile.getListChildren[2050].getContent[1];
+				} catch (e) {}
+				var intercode = new Intercode2();
+				myXplorer.informationPanel.body.insertHtml("beforeEnd","<br><b>Contracts</b><br/>");
+				for(i=1;i<currentPath.getContent.length;i++) {
+					myXplorer.informationPanel.body.insertHtml("beforeEnd",intercode.parseContract(currentPath.getContent[i],i,contractList)+"<br/>");
+				}
+			}
+        	    if (dump == "") {
+        	        dumpDataTrace("",myXplorer.fileDumpPanel);
+        	    }
+        	    else {
+			// (Dump is an array)
+        	        dumpDataTrace(dump,myXplorer.fileDumpPanel);
+        	    }
+        	    
+        	}
+        	else {
+			dumpForceData("",myXplorer.fileDumpPanel);
+        	}
+	}
+    });
+
+  var calCarI = new Ext.Panel({
+            title: 'Card Info',
+            region: 'south',
+            collapsible: true,
+            height: 100,
+            autoScroll: true,
+	    myXplorer: myXplorer,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+                'autoScroll': 'auto',
+                'font-size': '0.6em'
+            }
+	});
+   calCarI.on('render',function(panel){
+	panel.myXplorer.fillCardInfo(panel);
+	return true;
+   });
+
+   var p15west = new Ext.Panel({
+	region: 'west',
+	layout: 'border',
+	collapsible: false,
+	width: 300,
+	items: [ p15tree, calCarI]
+   });
+
+
+   this.informationPanel = new Ext.Panel({
+            region: 'center',
+            autoScroll: true,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+                'text-align': 'left',
+		'font-size' : '0.6em'
+            }
+        });
+
+	this.fileDumpPanel = new Ext.Panel({
+            title: 'Dump',
+            region: 'south',
+            collapsible: true,
+            height: 135,
+            autoScroll: true,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+                'autoScroll': 'auto',
+                'font-size': '0.6em'            
+            }
+	});
+
+    var central = new Ext.Panel({
+        title: ' Information',
+        region: 'center',
+        layout: 'border',
+        collapsible: false,
+        items: [this.informationPanel, this.fileDumpPanel]
+    
+    });
+
+
+    this.apduTracePanel = new Ext.Panel({
+            title: 'APDU Trace',
+            region: 'south',
+            collapsible: true,
+            height: 100,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+		'font-size' : '0.6em',
+                'text-align': 'left',
+                'caption-side': 'bottom',
+                'autoScroll': 'auto',
+                'wrap': 'off'
+            },
+            autoScroll: 'true'
+        });
+
+
+    calXplorer = new Ext.Panel({
+        renderTo: xId,
+        height: 500,
+	closable: true,
+        title: '** Unknown **',
+        layout: 'border',
+        items: [p15west, central, this.apduTracePanel]
+    });
+
+
+   guiExt.add(calXplorer).setTitle('Calypso Explorer');    
+}
+
+}
+
+/* start_explorer is loaded by the callback. In case several explorers are loaded
+   one after another, start_explorer is overridden. Probably not the cleanest code
+   in the world ?
+ */
+
+function start_explorer(reader,atr) {
+	// Display a nice loading bar while the scripts are loading...
+	Ext.MessageBox.show({
+		msg: 'Calypso Explorer',
+		progressText: 'Loading libraries...',
+		width: 250,
+		progress: true,
+		wait: true
+	});
+	/* First, load all the other scripts that we need */
+	if (typeof(defineJS)=="undefined" || typeof(utilsjs)=="undefined" ||
+	    typeof(asn1JS)=="undefined" || typeof(calypsoSmartCardJS)=="undefined" ||
+	    typeof(Parse_Card_Calypso)=="undefined" || typeof(calypsoOSJS)=="undefined" ||
+	    typeof(cardLayout)=="undefined" || typeof(intercode2JS)=="undefined" ){
+		setTimeout(function() {
+			start_explorer(reader,atr);
+		},100);
+		return;
+	}
+	// OK, all scripts were already loaded:
+	Ext.MessageBox.hide();
+	var calX = new CalypsoXplorer();
+	calX.init(reader,atr);
+
+}
+</script>
+</html>

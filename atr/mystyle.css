@@ -1,0 +1,40 @@
+
+.readers-list {
+	padding-left: 52px;
+	padding-top: 3px;
+}
+
+.readerIntro {
+	margin: 10px;
+}
+
+.reader-listed-enabled {
+        font-weight:bolder;
+        list-style-image: url('reader-inserted.png');
+}
+
+.reader-listed-disabled{
+        font-weight:normal;
+        list-style-image: url('reader-empty.png');
+}
+
+.mifareACLTable {
+	background: #f6f6f6;
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
+
+.mifareACLTable th {
+	font-weight: bold;
+	background: #e0e0e0;
+	border: 1px solid;
+	text-align: center;
+	padding: 2px;
+}
+
+.mifareACLTable td {
+	border-left: 1px solid;
+	border-right: 1px solid;
+	text-align: center;
+	padding: 2px;
+}

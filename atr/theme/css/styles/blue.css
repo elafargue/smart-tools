@@ -1,0 +1,36 @@
+a:link {
+	color: #163af1;
+}
+
+a:visited {
+	color: #641b94;
+}
+
+#navcontainer {
+	background: url(../../images/blue/menu_bg.png) repeat-x;
+}
+
+#navcontainer #current,
+#navcontainer .currentAncestor,
+#navcontainer a:hover {
+	background-image: url(../../images/blue/button_over.png);
+}
+
+#navcontainer ul ul a {
+	text-shadow: none;
+}
+
+#navcontainer ul ul a:hover,
+#navcontainer ul ul #current,
+#navcontainer ul ul .currentAncestor {
+	background: repeat-x url(../../images/blue/submenu_over.png) center top;
+	text-shadow: none;
+}
+
+#navcontainer ul ul ul li a:hover {
+	color: #0080ff;
+}
+
+#navcontainer ul ul ul #current {
+	color: #0080ff;
+}

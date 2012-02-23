@@ -1,0 +1,44 @@
+body {
+	background: url(../../images/light_bg.png) repeat;
+}
+
+a:link,
+a:visited {
+	color: #3799c4;
+}
+
+#gradient {
+	background: url(../../images/light_gradient.png) repeat-x;
+}
+
+.contentSpacer {
+	height:360px;
+}
+
+#pageHeader {
+}
+
+#pageHeader h1 {
+	color: #757a78;
+}
+
+#pageHeader h2 {
+	color: #949997;
+}
+
+#container {
+	background: #fff;
+}
+
+#footer {
+	color: #000;
+	background: url(../../images/light_bg.png) repeat;
+}
+
+#footer a:link {
+	color: #001fe7;
+}
+
+#footer a:active {
+	color: #e72619;
+}

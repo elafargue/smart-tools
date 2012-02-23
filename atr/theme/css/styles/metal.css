@@ -1,0 +1,29 @@
+a:link {
+	color: #f13af1;
+}
+
+a:visited {
+	color: #641b64;
+}
+
+#navcontainer {
+	background: url(../../images/metal/menu_bg.png) repeat-x;
+}
+
+#navcontainer #current,
+#navcontainer .currentAncestor,
+#navcontainer a:hover {
+	background-image: url(../../images/metal/button_over.png);
+}
+
+#navcontainer ul ul a {
+	text-shadow: none;
+}
+
+#navcontainer ul ul a:hover,
+#navcontainer ul ul #current,
+#navcontainer ul ul .currentAncestor {
+	background: repeat-x url(../../images/metal/submenu_over.png) center top;
+	text-shadow: none;
+	color: #000;
+}

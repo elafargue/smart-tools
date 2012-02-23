@@ -1,0 +1,30 @@
+body {
+	background-color: #000;
+	color: #ccc;
+}
+
+a:link,
+a:visited {
+	color: #fff;
+}
+
+#pageHeader h1,
+h1, h2, h3, h4,
+.blog-entry-title,
+.album-title,
+.thumbnail-caption {
+	color: #fff;
+}
+
+#footer {
+	color: #fff;
+}
+
+#navcontainer ul ul ul li a,
+#navcontainer ul ul ul li a:hover {
+	color: #fff;
+	text-shadow: none;
+}
+
+#navcontainer ul ul ul #current {	color: #fff;
+}

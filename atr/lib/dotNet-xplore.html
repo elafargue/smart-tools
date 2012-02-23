@@ -1,0 +1,204 @@
+<script type="text/javascript" src="lib/utils.js"></script>
+<script type="text/javascript" src="lib/p15/cardLayout.js"></script>
+<script type="text/javascript" src="lib/dotNet/cardmodule.js"></script>
+<script type="text/javascript" src="lib/dotNet/dotNetOS.js"></script>
+<script type="text/javascript" src="lib/dotNet/ContentManager.js"></script>
+<script type="text/javascript" src="lib/dotNet/NetUtilCardInfo.js"></script>
+<script type="text/javascript" src="lib/dotNet/dotNetSmartCard.js"></script>
+<script type="text/javascript" src="lib/dotNet/Parse_card.js"></script>
+<script type="text/javascript">
+/*
+ * Smart card Explorer for .NET cards
+ *
+ */
+
+/* Global variable */
+var mydotNetXplorer;
+
+var SC_SUCCESS  =	true;
+var SC_NO_ERROR =	true;
+
+dotNetXplorer=function(){
+};
+
+dotNetXplorer.prototype = {
+	reader: null,
+	atr: null,
+	cardNode: null,
+	/* Insert references to all subpanels here */
+	fileDumpPanel: null,
+
+	init: function(reader, atr) {
+		/* Instanciate the GUI */
+		this.reader= reader;
+		this.atr = atr;
+		this.createGui(this);
+	},
+
+	refreshCardTree: function() {
+		/* Insert the parser call here */
+		dotNetParseMe(this);
+	},
+
+	/* Fills the cardinfo panel:
+	 *  - OS & Card characteristics
+	 *  - Assembly listing.
+	 */
+	fillCardInfo: function(panel) {
+		var cardHtml1 = dotNetGetCardInfo(this.reader);
+		var cardHtml = dotNetGetCardServices(this.reader);
+		panel.html = cardHtml1 + "<hr>" + cardHtml + "<hr>" + dotNetCardModuleInfo(this.reader);
+	},
+
+	createGui: function(myXplorer){
+    //  |-------------------------------|
+    //  |             |                 |
+    //  |             |   File contents |
+    //  |   FS Tree   |---------------- |
+    //  |             |                 |
+    //  |             |    Card info    |
+    //  |-------------|-----------------|
+ 
+    // Create Specific GUI 
+		var d = new Date();
+		var xId = 'dotnet-' + d.getTime();
+        	Ext.DomHelper.append('xPlorer',"<div id='"+xId+"'></div>");
+
+		// Create Specific GUI  
+		var d = new Date();
+		var xId = 'cal-' + d.getTime();
+		Ext.DomHelper.append('xPlorer',"<div id='"+xId+"'></div>");
+		var Tree = Ext.tree;
+		Xtree = new Tree.TreePanel({
+    			title: 'Card Structure',
+			height: 200,
+			width: 300,
+			region: 'center',
+			animate: true,
+			autoScroll: true,
+			containerScroll: true,
+			myXplorer: myXplorer,
+			tools: [{
+				id:'refresh',
+				qtip: 'Parse/Refresh',
+				handler: function(event, toolEl, panel){
+					// refresh logic
+					panel.myXplorer.refreshCardTree();
+				}
+			}],
+			bodyStyle: {
+			},
+			dropConfig: {
+				appendOnly: true
+			}
+		});
+
+		this.cardNode = new Tree.TreeNode({
+			text: 'Click on the \'Refresh\' button above to start parsing.',
+			draggable: false, // disable root node dragging
+			id: 'root'
+		});
+		Xtree.setRootNode(this.cardNode);
+		Xtree.on('click', function(node){
+			var currentPath = node.details;
+       			// disable potential ongoing dump
+			enableDump = false;
+			myXplorer.fileDumpPanel.body.update("<u>File Attribute decoding: </u><br>");
+//			myXplorer.fileDumpPanel.body.insertHtml("beforeEnd",asn1.readTLV(currentPath.rawFileAttribute)+"<br>");
+			var dump = currentPath.getContent;
+//			if (dump == "") {
+//				dumpDataTrace("",myXplorer.fileDumpPanel);
+//			}
+//			else {
+//				// (Dump is an array)
+//				dumpDataTrace(dump,myXplorer.fileDumpPanel);
+//			}            
+		});
+
+		var p15west = new Ext.Panel({
+			region: 'west',
+			layout: 'border',
+			collapsible: false,
+			width: 300,
+			items: [ Xtree]
+		});
+
+
+		this.fileDumpPanel = new Ext.Panel({
+			title: 'Dump',
+			region: 'center',
+			collapsible: true,
+			height: 135,
+			autoScroll: true,
+			bodyStyle: {
+				'font-family': '"Andale Mono",courier,fixed,monospace',
+				'autoScroll': 'auto',
+				'font-size': '0.6em'            
+			}
+		});
+
+		var calCarI = new Ext.Panel({
+			title: 'Card Info',
+			region: 'south',
+			collapsible: true,
+			height: 250,
+			autoScroll: true,
+			myXplorer: myXplorer,
+			bodyStyle: {
+				'font-family': '"Andale Mono",courier,fixed,monospace',
+				'autoScroll': 'auto',
+				'font-size': '0.6em'
+			}
+		});
+
+		calCarI.on('render',function(panel){
+			panel.myXplorer.fillCardInfo(panel);
+			return true;
+		});
+
+		var central = new Ext.Panel({
+			region: 'center',
+			layout: 'border',
+			collapsible: false,
+			items: [this.fileDumpPanel, calCarI]
+		});
+
+		netXplorer = new Ext.Panel({
+			renderTo: xId,
+			height: 500,
+			closable: true,
+			title: '** Unknown **',
+			layout: 'border',
+			items: [p15west, central]
+		});
+
+		guiExt.add(netXplorer).setTitle('NetCard Explorer');
+	}
+}
+
+/* start_explorer is loaded by the callback. In case several explorers are loaded
+   one after another, start_explorer is overridden. Probably not the cleanest code
+   in the world ?
+
+   -> Each script that is loaded defines its name as a global variable and sets it to "true".
+	start_explorer waits for all subscripts to be loaded before calling the init code.
+ */
+
+function start_explorer(reader,atr) {
+/* First, load all the other scripts that we need */
+	if (typeof(ContentManager)=="undefined" || typeof(NetUtilCardInfo)=="undefined" ||
+	    typeof(cardmodule)=="undefined" || typeof(dotNetOSjs)=="undefined" ||
+	    typeof(Parse_Card_dotNet)=="undefined" || typeof(dotNetSmartCardjs)=="undefined" ||
+	    typeof(cardLayout)=="undefined" || typeof(utilsjs)=="undefined" ){
+	    setTimeout(function(reader,atr) {
+			start_explorer(reader,atr);
+		},100,reader,atr);
+		return;
+	}
+	// In case both scripts were already loaded:
+	var netX = new dotNetXplorer();
+	netX.init(reader,atr);		
+}
+
+
+</script>

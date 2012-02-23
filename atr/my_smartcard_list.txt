@@ -1,0 +1,157 @@
+3F 65 25 08 64 04 6C 90 00
+	Carte bancaire fran&ccedil;aise
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 7D 95 00 00 80 31 80 65 B0 83 11 00 C8 83 00 90 00
+3B 7D 96 00 00 80 31 80 65 B0 83 11 00 C8 83 00 90 00
+3B 95 95 40 FF D0 00 54 01 31
+	MSA81
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 7D 13 00 00 4D 44 57 2D 49 41 53 2D 43 41 52 44 32
+	Sagem IAS1.0.1 Premium
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B DF 96 00 80 31 FE 45 00 31 B9 64 15 BF 01 10 73 94 01 80 82 90 00 60
+3B DF 18 00 81 31 FE 45 00 31 B9 64 00 00 EC C1 73 94 01 C0 0F 90 00 B4
+	Oberthur IAS-ECC 1.0.1
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 99 96 C0 FF B1 A0 9F 1F C7 2E 4E 45 54 20 43 41 52 44 23
+	Feitian .NET card clone (v1.0)
+
+3B 8F 80 01 80 4F 0C A0 00 00 03 06 0A 00 1A 00 00 00 00 78 
+	HID iCLASS P16K contactless card
+
+3B 75 18 00 00 4B 01 01 00 80
+	Axalto Cyberflex Palmera Classic
+
+3B 65 00 00 9C 02 02 06 01
+	Axalto Cyberflex Palmera Protect
+
+3B 16 96 41 73 74 72 69 64
+	Gemalto .NET v2.0
+	<xplorer>lib/dotNet-xplore.html</xplorer>
+
+3B 9F .. 80 1F C3 00 68 1. 44 05 01 46 49 53 45 31 C8 .. 90 00 ..
+	Setec SetCOS 4.4.1
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 6F 00 00 80 5A .. 0[1-5] .. .. .. .. .. .. .. .. 82 90 00
+	Card supports a Calypso application Rev 1
+	Typically: French "Navigo" transport card
+	<xplorer>lib/calypso-xplore.html</xplorer>
+
+3B 6F 00 00 80 5A .. 0[6-7] .. .. .. .. .. .. .. .. 82 90 00
+	Card supports a Calypso application Rev 2
+	<xplorer>lib/calypso-xplore.html</xplorer>
+
+3B 6F 00 00 80 5A 0A 81 .. .. .. .. .. .. .. .. 82 90 00
+	Delegate card for Cartes 2005, including a Calypso app.
+	<xplorer>lib/calypso-xplore.html</xplorer>
+
+3B 88 80 01 00 00 00 00 B3 71 71 00 BA
+3B 6F 00 00 80 5A 29 13 09 10 11 33 .. .. .. .. 82 90 00
+	Belgian "MOBIB" transport card, Calypso compliant
+	<xplorer>lib/calypso-xplore.html</xplorer>
+
+3B 7D [94|96] 00 00 80 31 80 65 B0 83 01 02 90 83 00 90 00
+	Classic TPC IS (applet V1) G123 - Webstore configuration
+
+3B 7D 95 00 00 80 31 80 65 B0 83 02 03 7E 83 00 90 00
+	GemsafeXpresso 36K
+	Flow: GSF236
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 7D 94 00 00 80 31 80 65 B0 83 11 C0 A9 83 00 90 00
+	Gemsafe card with V2 applet
+	<xplorer>lib/p15-xplore.html</xplorer>	
+
+3B 7D 95 00 00 80 31 80 65 B0 83 02 04 7E 83 00 90 00
+	Classic TPC IM CC (applet V2) G155 - Webstore configuration
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 7D 96 00 00 80 31 80 65 B0 83 11 48 C8 83 00 90 00
+	Classic TPC IS V2 (applet V2) MSA030 - Webstore configuration
+
+3B 7D 96 00 00 80 31 80 65 B0 83 11 48 C8 83 00 90 00
+	Classic TPC IS V2 (applet V1) MSA030 - Webstore configuration
+
+3B 7D 96 00 00 80 31 80 65 B0 83 11 40 C8 83 00 90 00
+	Classic TPC IM (packages applet V1 & applet V2 - No profile) MSA030 - Webstore configuration
+
+3B 7D 96 00 00 80 31 80 65 B0 83 11 D0 A9 83 00 90 00
+	TOP IM FIPS (packages applet V1 & applet V2 - No profile) MSA029 - Webstore configuration
+
+3B 7D 96 00 00 80 31 80 65 B0 83 11 40 C8 83 00 90 00
+	Classic TPC IM (applet V2) MSA030 - Webstore configuration
+
+3B 7D 96 00 00 80 31 80 65 B0 A3 11 40 C8 83 00 90 00
+	Gemalto TOP IM MSA030
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 29 00 80 72 A4 45 64 00 FF 00 10
+	MPCOS entry 1K
+
+3B 9F 96 80 1F C2 58 73 20 53 74 61 72 74 3A 30 30 30 30 30 30 25
+	JavaCard 3
+
+3B 2A 00 80 65 A2 01 02 01 31 72 D6 43
+	MPCOS EMV R5 8000
+
+3B 7D 96 00 00 80 31 80 65 B0 83 11 11 AC 83 00 90 00
+	TOP DM FIPS
+
+3B 8F 80 01 80 4F 0C A0 00 00 03 06 03 00 01 00 00 00 00 6A
+	Philips MIFARE Standard (1 Kbytes EEPROM)
+	PC/SC 2.01 Pseudo-ATR
+	<xplorer>lib/mifare-xplore.html</xplorer>
+
+3B 8F 80 01 80 4F 0C A0 00 00 03 06 03 00 00 00 00 00 00 6B
+	MIFARE 1K
+	PC/SC 2.01 Pseudo-ATR, not compliant (SDI010 reader?)
+	<xplorer>lib/mifare-xplore.html</xplorer>
+
+3B 8F 80 01 80 4F 0C A0 00 00 03 06 03 00 02 00 00 00 00 69
+	Mifare card with 4k EEPROM
+	PC/SC 2.01 Pseudo-ATR
+	<xplorer>lib/mifare-xplore.html</xplorer>
+
+3B 8F 80 01 80 4F 0C A0 00 00 03 06 03 00 03 00 00 00 00 68
+	Mifare Ultralight
+	PC/SC 2.01 Pseudo-ATR
+	<xplorer>lib/mifare-xplore.html</xplorer>
+
+3B 7E 95 00 00 80 31 80 73 34 11 80 82 90 00 00 00 00 00
+	Gemalto IAS 1.01 premium smart card
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B .. .. .. .. 00 31 B8 64 .. .. .. .. 73 .. .. .. 82 90 00
+	IAS-ECC Smart Card (generic Gixel ATR definition)
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 7F 96 00 00 00 31 B9 64 40 70 14 10 73 94 01 80 82 90 00
+3B 7D 96 00 00 80 31 80 65 B0 84 11 00 A9 83 00 90 00
+3B 6D 00 00 80 31 80 65 B0 85 01 00 D6 83 01 90 00
+3B 7D 96 00 00 80 31 80 65 B0 85 01 00 D6 83 01 90 00
+3B 7F 96 00 00 00 31 B9 64 40 70 14 10 73 94 01 80 82 90 00
+	IAS-ECC (v1.01) smart card
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B FF 96 00 00 80 31 80 43 00 31 B9 64 40 70 14 10 73 94 01 80 82 90 00 B7
+3B 8F 80 01 80 91 E1 31 80 65 B0 85 01 00 D6 83 00 90 00 DB
+	IAS-ECC (v1.01) smart card over T=CL interface
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 8F 80 01 80 4F 0C A0 00 00 03 06 06 00 07 00 00 00 00 69
+	ST Microelectronics SRI Series
+	Consumer application: Nabaztag "Ztamp"
+
+3B 7D 96 00 00 80 31 80 65 B0 83 11 11 E5 83 00 90 00
+	Gemalto Top DL v2
+	<xplorer>lib/p15-xplore.html</xplorer>
+
+3B 8F 80 01 80 91 E1 31 80 65 B0 83 11 11 E5 83 00 90 00 EF
+	Gemalto Top DL v2 (contactless interface)
+	<xplorer>lib/p15-xplore.html</xplorer>
+

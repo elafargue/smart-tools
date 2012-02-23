@@ -1,0 +1,39 @@
+<html>
+
+<script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/generic/genericSmartCard.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/generic/Parse_card.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/generic/genericXplorer.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+/* start_explorer is loaded by the callback. In case several explorers are loaded
+   one after another, start_explorer is overridden. Probably not the cleanest code
+   in the world ?
+ */
+
+function start_explorer(reader,atr) {
+	// Display a nice loading bar while the scripts are loading...
+	Ext.MessageBox.show({
+		msg: 'Generic Explorer/Scripter',
+		progressText: 'Loading libraries...',
+		width: 250,
+		progress: true,
+		wait: true
+	});
+	/* First, load all the other scripts that we need */
+	if (typeof(utilsjs)=="undefined" || typeof (genericXplorerJS) == "undefined" ||
+	    typeof(genericSmartCardJS)=="undefined" ||
+	    typeof(Parse_Card_Generic_JS)=="undefined" ){
+		setTimeout(function() {
+			start_explorer(reader,atr);
+		},100);
+		return;
+	}
+	// OK, all scripts were already loaded:
+	Ext.MessageBox.hide();
+	var genfX = new GenericXplorer();
+	genX.init(reader,atr);
+
+}
+</script>
+</html>

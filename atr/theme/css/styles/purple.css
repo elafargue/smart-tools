@@ -1,0 +1,28 @@
+a:link {
+	color: #b796f7;
+}
+
+a:visited {
+	color: #551a8b;
+}
+
+#navcontainer {
+	background: url(../../images/purple/menu_bg.png) repeat-x;
+}
+
+#navcontainer #current,
+#navcontainer .currentAncestor,
+#navcontainer a:hover {
+	background-image: url(../../images/purple/button_over.png);
+}
+
+#navcontainer ul ul a {
+	text-shadow: none;
+}
+
+#navcontainer ul ul a:hover,
+#navcontainer ul ul #current,
+#navcontainer ul ul .currentAncestor {
+	background: repeat-x url(../../images/purple/submenu_over.png) center top;
+	text-shadow: none;
+}

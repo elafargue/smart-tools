@@ -1,0 +1,36 @@
+a:link {
+	color: #7787a0;
+}
+
+a:visited {
+	color: #566175;
+}
+
+#navcontainer {
+	background: url(../../images/graphite/menu_bg.png) repeat-x;
+}
+
+#navcontainer #current,
+#navcontainer .currentAncestor,
+#navcontainer a:hover {
+	background-image: url(../../images/graphite/button_over.png);
+}
+
+#navcontainer ul ul a {
+	text-shadow: none;
+}
+
+#navcontainer ul ul a:hover,
+#navcontainer ul ul #current,
+#navcontainer ul ul .currentAncestor {
+	background: repeat-x url(../../images/graphite/submenu_over.png) center top;
+	text-shadow: none;
+}
+
+#navcontainer ul ul ul a:hover{
+	color: #b3b3b3;
+}
+
+#navcontainer ul ul ul #current{
+	color: #b3b3b3;
+}

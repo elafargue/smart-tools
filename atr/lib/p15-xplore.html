@@ -1,0 +1,333 @@
+	<script src="lib/p15/PKCS15.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/define.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/cardLayout.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/7816.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/asn1JS.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/setecOS.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/IASPremiumOS.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/IASEccOS.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/gemSafeOS.js" type="text/javascript" charset="utf-8"></script>
+        <script src="lib/p15/portugalID.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/P15SmartCard.js" type="text/javascript" charset="utf-8"></script>
+	<script src="lib/p15/Parse_card.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+/*
+ * Explorer for PKCS#15 Smart Cards
+ *
+ * Based on original work by R. Dollet
+ * Edouard Lafargue, edouard@lafargue.name
+ *
+ * Distributed under the GNU GENERAL PUBLIC LICENSE (GPL)
+ * Version 2 (June 1991).
+ */
+
+P15Xplorer=function(){
+};
+
+
+P15Xplorer.prototype = {
+	reader: null,
+	atr: null,
+	cardNode: null,
+	informationPanel: null,
+	fileDumpPanel: null,
+	apduTracePanel: null,
+	cardConnector: null,
+	SMKeys: null,
+
+
+	init: function(reader, atr) {
+		/* Instanciate the GUI */
+	this.reader= reader;
+	this.atr = atr;
+	this.createP15XploreGui(this);
+	},
+
+	refreshCardTree: function() {
+		this.cardConnector = P15parseMe(this);
+	},
+
+	createP15XploreGui: function(myXplorer){
+    //  |-----------------|-------------|
+    //  | Toolbar         |             |
+    //  |-----------------|             |
+    //  |                 |             |         
+    //  |                 |   Analyse   |         
+    //  |       Tree      |------------ |         
+    //  |                 |             |         
+    //  |                 |    Dump     |         
+    //  |-----------------|-------------|
+    //  |                APDU           |         
+    //  |-------------------------------|
+    
+    // Create Specific GUI  
+//    Ext.get('xPlorer').update("<div id='p15treediv'></div><div id='APDUTrace'></div><div id='Information'></div><div id='Dump'></div>");
+	var d = new Date();
+	var xId = 'p15-' + d.getTime();
+    Ext.DomHelper.append('xPlorer',"<div id='"+xId+"'></div>");
+
+    // All columns are percentages -- they must add up to 1
+    var Tree = Ext.tree;
+    p15tree = new Tree.TreePanel({
+        title: 'Card Structure',
+        height: 200,
+        width: 300,
+        region: 'center',
+        animate: true,
+        autoScroll: true,
+        containerScroll: true,
+	myXplorer: myXplorer,
+	tools: [{
+    		id:'refresh',
+    		qtip: 'Parse/Refresh',
+    		handler: function(event, toolEl, panel){
+        	// refresh logic
+		panel.myXplorer.refreshCardTree();
+	    }
+	}],
+        bodyStyle: {
+        },
+        
+        dropConfig: {
+            appendOnly: true
+        }
+    });
+
+    this.cardNode = new Tree.TreeNode({
+        text: 'Click on the \'Refresh\' button above to parse the card',
+        draggable: false, // disable root node dragging
+        id: 'root'
+    });
+    p15tree.setRootNode(this.cardNode);
+    p15tree.on('click', function(node){
+        var asn1 = new ASN1("IAS-ECC");
+        var currentPath = node.details;
+        var cardInfo;
+        
+        // In case the user clicks on the empty tree instead of the refresh button
+	if ((node.childNodes.length ==0) && (node.id=="root")) {
+		myXplorer.refreshCardTree();
+	} else {
+	        // disable current dump
+	        enableDump = false;
+	        myXplorer.informationPanel.body.update("<u>File Attribute decoding: </u><br>");
+		asn1.setContext("FCI"); // Enables the FCI context-specific tags to be properly decoded.
+        	myXplorer.informationPanel.body.insertHtml("beforeEnd",asn1.readTLV(currentPath.rawFileAttribute)+"<br>");
+	        if ((currentPath.fileFamily === "EF") && (currentPath.getContent != "")) {
+	            var dump = currentPath.getContent;
+	            if (myXplorer.informationPanel.body.dom.innerHTML.indexOf('(0x82) File Descriptor byte (FDB): 11') > 0) {
+	                myXplorer.informationPanel.body.insertHtml("beforeEnd","<u>RSA Key:</u>");
+	                var NbBits = parseInt("0x" + dump.substr(0, 4), 16);
+	                var NbDigits = NbBits / 4;
+	                myXplorer.informationPanel.body.insertHtml("beforeEnd","Public modulus: " + parseInt("0x" + dump.substr(6 + NbDigits + 2), 16));
+	                myXplorer.informationPanel.body.insertHtml("beforeEnd","Public exponent: " + NbBits.toString() + " bits ");
+	                dumpH(['',dump.substr(4, NbDigits)], 0, myXplorer.fileDumpPanel, 24);
+	            }
+	            else { // asn1.readASN1 tries to parse using standard tags:
+			switch (currentPath.fileID) {
+				case "5032":
+					asn1.setContext("CIAInfo");
+					var fileType = "EF.CIAInfo";
+					break;
+				case "5031":
+					asn1.setContext("CIOChoice");
+					var fileType = "EF.OD";
+					break;
+				default:
+					asn1.setContext("");
+					var fileType = "Default";
+			}
+	                myXplorer.informationPanel.body.insertHtml("beforeEnd","<u>Content Parsing with ASN1,</u> Assuming we are in a " + fileType + " context.<br> " + asn1.readASN1(currentPath.getContent));
+	            }
+	            if (dump == "") {
+	                dumpDataTrace("",myXplorer.fileDumpPanel);
+	            }
+	            else {
+			var cp = new Array();
+			cp[1] = dump;
+	                dumpDataTrace(cp,myXplorer.fileDumpPanel);
+	            }
+	             
+        }
+        else {
+		dumpForceData("",myXplorer.fileDumpPanel);
+        }
+	}
+    });
+
+
+  this.SMKeys = new Ext.FormPanel({
+            title: 'Secure Messaging Keys (not active)',
+            region: 'south',
+            collapsible: true,
+            height: 110,
+	    myXplorer: myXplorer,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+                'padding': '5px',
+                'font-size': '0.6em'
+            },
+	    labelWidth: 50,
+	    defaultType: 'textfield',
+	    items: [{
+		fieldLabel: 'Master',
+		maxLength: 32,
+		maxLengthText: 'DES Keys are only 16 bytes long',
+		regex: new RegExp("[a-fA-F0-9]{12}"),
+		regexText: 'Please enter a 16-byte Hex string',
+		value: '',
+		name: 'keyMaster',
+		allowBlank: true
+		},{
+		fieldLabel: 'ENC',
+		maxLength: 32,
+		maxLengthText: 'DES Keys are only 16 bytes long',
+		regex: new RegExp("[A-F0-9]{12}"),
+		regexText: 'Please enter a 16-byte Hex string',
+		value: '404142434445464748494A4B4C4D4E4F',
+		name: 'keyENC',
+		allowBlank: false
+		},{
+		fieldLabel: 'MAC',
+		maxLength: 32,
+		maxLengthText: 'DES Keys are only 16 bytes long',
+		regex: new RegExp("[A-F0-9]{12}"),
+		regexText: 'Please enter a 16-byte Hex string',
+		value: '404142434445464748494A4B4C4D4E4F',
+		name: 'keyMAC',
+		allowBlank: false
+		},{
+		fieldLabel: 'DEK',
+		maxLength: 32,
+		maxLengthText: 'DES Keys are only 16 bytes long',
+		value: '404142434445464748494A4B4C4D4E4F',
+		regex: new RegExp("[A-F0-9]{12}"),
+		regexText: 'Please enter a 16-byte Hex string',
+		name: 'keyDEK',
+		allowBlank: false
+		}]
+	});
+
+    // simple button add
+    this.SMKeys.addButton('Diversify', function(){
+	myXplorer.informationPanel.body.update("<u>Diversifying the SM keys using the following Master key:</u><br>" + myXplorer.SMKeys.getForm().getValues().keyMaster);
+	if (myXplorer.cardConnector) {
+	if (myXplorer.cardConnector.diversify(myXplorer.SMKeys.getForm().getValues().keyMaster)) {
+		myXplorer.informationPanel.body.insertHtml("beforeEnd", " - Success.");
+	} else {
+		myXplorer.informationPanel.body.insertHtml("beforeEnd", " - Failure.");
+	}} else {
+		myXplorer.informationPanel.body.insertHtml("beforeEnd", "Failure: please parse the card structure before setting the SM keys.");
+	}
+    });
+
+
+
+   var p15west = new Ext.Panel({
+	region: 'west',
+	layout: 'border',
+	collapsible: false,
+	width: 300,
+	items: [ p15tree, this.SMKeys]
+   });
+
+
+
+
+	this.informationPanel = new Ext.Panel({
+            region: 'center',
+            autoScroll: true,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+                'text-align': 'left',
+		'font-size' : '0.6em'
+            }
+        });
+
+	this.fileDumpPanel = new Ext.Panel({
+            title: 'Dump',
+            region: 'south',
+            collapsible: true,
+            height: 135,
+            autoScroll: true,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+                'autoScroll': 'auto',
+                'font-size': '0.6em'            
+            }
+	});
+
+    var central = new Ext.Panel({
+        title: ' Information',
+        region: 'center',
+        layout: 'border',
+        collapsible: false,
+        items: [this.informationPanel, this.fileDumpPanel]
+    });
+
+
+
+    this.apduTracePanel = new Ext.Panel({
+            title: 'APDU Trace',
+            region: 'south',
+            collapsible: true,
+            height: 100,
+            bodyStyle: {
+                'font-family': '"Andale Mono",courier,fixed,monospace',
+		'font-size' : '0.6em',
+                'text-align': 'left',
+                'caption-side': 'bottom',
+                'autoScroll': 'auto',
+                'wrap': 'off'
+            },
+            autoScroll: 'true'
+        });
+    
+    p15Xplorer = new Ext.Panel({
+        renderTo: xId,
+        height: 500,
+	closable: true,
+        title: '** Unknown **',
+        layout: 'border',
+        items: [p15west, central, this.apduTracePanel]
+    });
+
+
+   guiExt.add(p15Xplorer).setTitle('PKCS#15 Explorer');    
+}
+
+}
+
+/* start_explorer is loaded by the callback. In case several explorers are loaded
+   one after another, start_explorer is overridden. Probably not the cleanest code
+   in the world ?
+ */
+function start_explorer(reader,atr) {
+	// Display a nice loading bar while the scripts are loading...
+	Ext.MessageBox.show({
+		msg: 'PKCS#15 Explorer',
+		progressText: 'Loading libraries...',
+		width: 250,
+		progress: true,
+		wait: true
+	});
+	/* First, load all the other scripts that we need */
+	if (typeof(defineJS)=="undefined" || typeof(utilsjs)=="undefined" || typeof(iasPremiumOSJS) == "undefined" ||
+	    typeof(asn1JS)=="undefined" || typeof(iso7816JS)=="undefined" || typeof(setecOSJS)=="undefined" ||
+	    typeof(P15SmartCardJS)=="undefined" || typeof(P15_Parse_card_JS)=="undefined" || typeof(gemSafeOSJS) == "undefined" || typeof(portugalIDJS) == "undefined" ||
+	    typeof(cardLayout)=="undefined" || typeof(PKCS15JS)=="undefined" || typeof(iasEccOSJS) == "undefined" ){
+		setTimeout(function() {
+			start_explorer(reader,atr);
+		},100);
+		return;
+	}
+	// OK, all scripts were already loaded:
+	Ext.MessageBox.hide();
+	var p15 = new P15Xplorer();
+	p15.init(reader,atr);
+
+}	
+
+</script>
+

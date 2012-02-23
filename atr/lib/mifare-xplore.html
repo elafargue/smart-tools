@@ -1,0 +1,61 @@
+<html>
+
+<!-- Inject The relevant styles for the grid -->
+
+<style type="text/css">
+.x-grid3-col-value {
+     font-family: monospace;
+     font-size: 1em;
+
+}
+.x-grid3-col-address {
+     font-family: monospace;
+     font-size: 1em;
+
+}
+.x-grid3-col-ascii {
+     font-family: monospace;
+     font-size: 1em;
+
+}
+</style>
+
+<script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/mifare/mifareSmartCard.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/mifare/mifareOS.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/mifare/Parse_card.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/mifare/mifareXplorer.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+/* start_explorer is loaded by the callback. In case several explorers are loaded
+   one after another, start_explorer is overridden. Probably not the cleanest code
+   in the world ?
+ */
+
+function start_explorer(reader,atr) {
+	// Display a nice loading bar while the scripts are loading...
+	Ext.MessageBox.show({
+		msg: 'Mifare Explorer',
+		progressText: 'Loading libraries...',
+		width: 250,
+		progress: true,
+		wait: true
+	});
+	/* First, load all the other scripts that we need */
+	if (typeof(utilsjs)=="undefined" || typeof (mifareXplorerJS) == "undefined" ||
+	    typeof(mifareSmartCardJS)=="undefined" ||
+	    typeof(Parse_Card_Mifare_JS)=="undefined" || typeof(mifareOSJS)=="undefined"
+	    ){
+		setTimeout(function() {
+			start_explorer(reader,atr);
+		},100);
+		return;
+	}
+	// OK, all scripts were already loaded:
+	Ext.MessageBox.hide();
+	var mifX = new MifareXplorer();
+	mifX.init(reader,atr);
+
+}
+</script>
+</html>

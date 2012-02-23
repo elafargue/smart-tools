@@ -1,0 +1,44 @@
+body {
+	background: url(../../images/dark_bg.png) repeat;
+}
+
+#gradient {
+	background: url(../../images/dark_gradient.png) repeat-x;
+}
+
+.contentSpacer {
+	height:360px;
+}
+
+a:link,
+a:visited {
+	color: #3974df;
+}
+
+#pageHeader {
+}
+
+#pageHeader h1 {
+	color: #757a78;
+}
+
+#pageHeader h2 {
+	color: #949997;
+}
+
+#container {
+	background: #fff;
+}
+
+#footer {
+	color: #fff;
+	background: url(../../images/dark_bg.png) repeat;
+}
+
+#footer a:link {
+	color: #5f87a7;
+}
+
+#footer a:active {
+	color: #5f87a7;
+}

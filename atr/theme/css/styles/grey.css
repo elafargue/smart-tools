@@ -1,0 +1,30 @@
+a:link {
+	color: #163af1;
+}
+
+a:visited {
+	color: #641b94;
+}
+
+#navcontainer {
+	background: url(../../images/menu_bg.png) repeat-x;
+}
+
+#navcontainer #current,
+#navcontainer .currentAncestor,
+#navcontainer a:hover {
+	background-image: url(../../images/button_over.png);
+	height: 23px;
+}
+
+#navcontainer ul ul a:hover,
+#navcontainer ul ul #current,
+#navcontainer ul ul .currentAncestor {
+	background: repeat-x url(../../images/submenu_over.png) center top;
+	text-shadow: 0px 1px 0px #ffffff;
+	color: #000;
+}
+
+#navcontainer ul ul ul li a {
+	color: #121212;
+}

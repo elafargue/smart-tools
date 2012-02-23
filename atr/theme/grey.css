@@ -1,0 +1,67 @@
+body {
+	background:transparent url(body_bg.png) repeat scroll 0% 50%;
+	color:#333333;
+	font-family:Geneva,Arial,Helvetica,sans-serif;
+	font-size:0.7em;
+	font-size-adjust:none;
+	font-stretch:normal;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:1.35em;
+	height:auto;
+	margin:0pt;
+	text-align:justify;	
+}
+
+#pageHeader {
+	height:102px;
+	margin-top:20px;
+	margin-bottom:20px;
+	text-align:center;
+	background-color:#dddddd;
+}
+
+#container {
+	line-height:1.8em;
+	margin:0px auto 10px auto;	
+	text-align:left;
+	width:750px;
+	 background-color:#ffdddd;
+}
+
+#sidebarContainer {
+	float:left;
+	text-align:left;
+	line-height:1.6em;
+	width:210px;
+	background-color:#dddddd;
+}
+
+#sidebarContainer #listReaders {
+	background-color:#eeeeee;
+	color:#555555;
+	margin: 5px 5px 5px 5px;
+
+}
+
+#mainContainer {
+	float:right;
+	background-color:#dedede;
+	width:530px;
+	padding:5px;
+	margin:0px;
+	text-align:left;
+
+}
+
+#footer {
+	color:#efefef;
+	font-weight:bold;
+	height:39px;
+	margin:20px auto 20px;
+	text-align:center;
+	text-shadow:#333333 1px 1px 2px;
+	width:750px;	
+	position:relative;
+}
