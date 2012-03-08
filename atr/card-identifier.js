@@ -34,7 +34,36 @@ function Hex(dec) {
 	return hex;
 }
 
-        
+/*
+ * Reads card info from the hidden "carddb" inner frame
+ */
+function getCard(atr) {
+    // cross-browser method to get access a inner frame DOM element
+    var oIframe = document.getElementById('carddb');
+    var oDoc = (oIframe.contentWindow || oIframe.contentDocument);
+    if (oDoc.document) oDoc = oDoc.document;
+    var atr_list = oDoc.getElementsByTagName('p')
+    for (candidate in atr_list) {
+        var el = $(atr_list[candidate])
+        var pattern = el.text()
+        if (atr.match(pattern)) {
+          // we found the atr
+          // build result
+          var card = { "dummy":""}
+          //var namediv = el.parentNode.nextSibling.nextSibling
+          var namediv = $(el).parent().next()
+          card["name"] = namediv.html()
+          try { 
+            // this may not be present
+            var nxt = namediv.next()
+            card["xplorer"] = nxt.text()
+          } catch (e) {}
+          return card
+        }
+    }
+    return undefined
+}
+
 
 /* Parses an ATR: called when a 'click' event is generated, the ATR
    is available in options.atr
@@ -105,36 +134,32 @@ function ParseATR(event, target, options ){
 		var el = Ext.get('atrParse');
 		el.update(result);
 
-		// Now query the backend server to check whether the card ATR is known
-		var conn = new Ext.data.Connection();
-		conn.request({
-			url: 'cardQuery.php',
-			method: 'GET',
-			success: function(responseObject) {
-			   var el = Ext.get('cardInfo');
-			   response = Ext.util.JSON.decode(responseObject.responseText);
-		           el.update(response.description);
-			   if (response.xplorer) {
+		// Check if the card ATR is known
+		var card = getCard(options.atr)
+		var cardInfoEl = Ext.get('cardInfo');
+		if (card) {
+			cardInfoEl.update(card.name);
+			if (card.xplorer) {
 				// Load the Explorer
 				var xplo = Ext.get("xPlorer").getUpdater();
 				xplo.loadScripts=true;
 				xplo.update({
-					url: response.xplorer,
+				url: card.xplorer,
 					scripts: true,
 					method: 'get',
-					atr: response.atr,
-					reader: response.reader,
+				atr: options.atr,
+				reader: options.reader,
 					callback : function (el, success, response, options) {
 							// Need the settimeout for IE compatibility
 							var startE = function() { start_explorer(options.reader,options.atr);}
 							setTimeout(startE,100);
 					}
 				});
-			   }
-			},
-			params: { atr: options.atr, reader: options.reader}
-		});
-        }
+			}
+		} else {
+			cardInfoEl.update("Unknown card");
+		}
+	}
 
 
 function analyse_ta(atr) {
