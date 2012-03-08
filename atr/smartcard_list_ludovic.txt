@@ -815,8 +815,9 @@
 3B 7D 94 00 00 80 31 80 65 B0 83 11 00 AC 83 00 90 00
 	GemCombiXpresso R4 72K
 
-3B 7D 94 00 00 80 31 80 65 B0 83 11 C0 A9 83 00 90 00
-	GemXpresso R4 72K
+# duplicate with my_smartcard.txt
+#3B 7D 94 00 00 80 31 80 65 B0 83 11 C0 A9 83 00 90 00
+#	GemXpresso R4 72K
 
 3B 7D 95 00 00 80 31 80 65 B0 83 02 04 7E 83 00 90 00
 	Gemalto's Classic TPC HM CC Mifare 1K White PVC
